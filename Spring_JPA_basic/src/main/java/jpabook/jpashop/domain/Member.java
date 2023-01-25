@@ -2,7 +2,7 @@ package jpabook.jpashop.domain;
 
 
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.Order;
+
 import lombok.Getter;
 import lombok.Setter;
 
