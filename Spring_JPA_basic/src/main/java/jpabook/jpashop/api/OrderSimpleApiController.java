@@ -3,7 +3,6 @@ package jpabook.jpashop.api;
 
 import jpabook.jpashop.domain.Address;
 import jpabook.jpashop.domain.Order;
-import jpabook.jpashop.domain.OrderItem;
 import jpabook.jpashop.domain.OrderStatus;
 import jpabook.jpashop.repository.OrderRepository;
 import jpabook.jpashop.repository.OrderSearch;
@@ -29,23 +28,21 @@ public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
     private final OrderSimpleQueryRepository orderSimpleQueryRepository;
-    @GetMapping("/api/v1/orders")
+    @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
-        List<Order> all = orderRepository.findAll();
+        List<Order> all = orderRepository.findAllByString(new OrderSearch());
         for (Order order : all) {
             order.getMember().getName(); // 아무튼 Lazy를 강제로 초기화시켜버림
             order.getDelivery().getAddress();
-            List<OrderItem> orderItems = order.getOrderItems();
-            orderItems.stream().forEach(o -> o.getItem().getName());
         }
         return all;
     }
 
-    @GetMapping("/api/v2/orders")
+    @GetMapping("/api/v2/simple-orders")
     public List<SimpleOrderDto> ordersV2() {
         //ORDER 2개
         //N + 1 -> 1 + 회원 N + 배송 N
-        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<Order> orders = orderRepository.findAll();
         List<SimpleOrderDto> result = orders.stream()
                 .map(o -> new SimpleOrderDto(o))
                 .collect(Collectors.toList());
@@ -53,7 +50,7 @@ public class OrderSimpleApiController {
         return result;
     }
 
-    @GetMapping("/api/v3/orders")
+    @GetMapping("/api/v3/simple-orders")
     public List<SimpleOrderDto> ORDERSv3(){
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
         List<SimpleOrderDto> result = orders.stream()
@@ -63,7 +60,7 @@ public class OrderSimpleApiController {
         return result;
     }
 
-    @GetMapping("/api/v4/orders")
+    @GetMapping("/api/v4/simple-orders")
     public List<OrderSimpleQueryDto> ordersV4(){
         return orderSimpleQueryRepository.findOrderDtos();
     }
